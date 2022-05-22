@@ -10,20 +10,21 @@ uniform mat4 transformationMatrix;
 
 void main()
 {
-	gl_Position = vPosition;
+	gl_Position = transformationMatrix*vPosition;
     gl_Position.z = 0.0;
     gl_Position.w = 1.0;
+	
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
 
 precision mediump float;
-//TODO: perform necessary color operations
+uniform vec4 color;
 
 void main()
 {
-    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
+    gl_FragColor = color;
 }
 </script>
 
@@ -47,7 +48,7 @@ Name Surname, studentid
 		</td>
 		<td>
 			<div>Number</div>
-			<div><input id="inp_number" type="number" min="0" max="99" maxlength="2"></div>
+			<div><input id="inp_number" type="number" min="0" max="99" maxlength="2" ></div>
 			
 			<div> <strong>---- Color ----</strong> </div><br>
 			<div>

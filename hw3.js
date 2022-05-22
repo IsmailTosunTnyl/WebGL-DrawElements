@@ -63,8 +63,17 @@ var numberBlocks = [
     [0,1,2,3,5,6,7,8,9,11,12,13,14],        //8
     [0,1,2,3,5,6,7,8,11,14]                 //9
 ];
+var program;
 var indices = [];
-
+var x = 0;
+var y = 0;
+var scaleX = 1;
+var scaleY = 1;
+var rotateZ = 0;
+var colorArray = [Math.random() ,Math.random(),Math.random(),1.0]
+var firstDigit; 
+var secondDigit;
+var studentsNumberEnd = 07;
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
@@ -79,7 +88,7 @@ window.onload = function init()
     gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
 
     //  Load shaders and initialize attribute buffers
-    var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+    program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 
     // Make the numbers
@@ -95,46 +104,71 @@ window.onload = function init()
     gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
 
-    calculateVertices(5)
-    //indices = [0,1,4,4,5,1,1,2,5,2,6,5]
-    var iBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices),gl.STATIC_DRAW);
+    
+   
+    
+    
 
     transformationMatrixLoc = gl.getUniformLocation( program, "transformationMatrix" );
-/*
+
 	document.getElementById("inp_number").oninput = function(event) {
-        //TODO: fill here to adjust number to display input value
+        if(this.value < 10)
+          firstDigit = 0;
+        else
+          firstDigit = Math.floor(this.value / 10) ;
+        secondDigit =  this.value%10;
+        render();
     };
 	
     document.getElementById("inp_objX").oninput = function(event) {
-        //TODO: fill here to adjust translation according to slider value
+        x = this.value;
+        render();
+        
     };
     document.getElementById("inp_objY").oninput = function(event) {
-        //TODO: fill here to adjust translation according to slider value
+        y = this.value;
+        render();
     };
     document.getElementById("inp_obj_scaleX").oninput = function(event) {
-        //TODO: fill here to adjust scale according to slider value
+        
+        scaleX = this.value;
+        render();
     };
     document.getElementById("inp_obj_scaleY").oninput = function(event) {
-        //TODO: fill here to adjust scale according to slider value
+        
+        scaleY= this.value;
+        render();
     };
     document.getElementById("inp_rotation").oninput = function(event) {
-        //TODO: fill here to adjust rotation according to slider value
+        
+        rotateZ = this.value;
+        render();
     };
     document.getElementById("redSlider").oninput = function(event) {
-        //TODO: fill here to adjust color according to slider value
+        colorArray[0] = this.value;
+        render();
     };
     document.getElementById("greenSlider").oninput = function(event) {
-        //TODO: fill here to adjust color according to slider value
+        colorArray[1] = this.value;
+        render();
     };
     document.getElementById("blueSlider").oninput = function(event) {
-        //TODO: fill here to adjust color according to slider value
+        colorArray[2] = this.value;
+        render();
     };
-    */
+
+     // initilaze inputs values   
+    document.getElementById("redSlider").value=colorArray[0]
+    document.getElementById("greenSlider").value=colorArray[1]
+    document.getElementById("blueSlider").value=colorArray[2]
+    document.getElementById("inp_number").value = studentsNumberEnd;
+    if(studentsNumberEnd < 10)
+        firstDigit = 0;
+    else
+        firstDigit = Math.floor(this.value / 10) ;
+    secondDigit =  studentsNumberEnd%10;
    
-   
-    console.log("ssss")
+    
     
     render();
 
@@ -144,31 +178,62 @@ window.onload = function init()
 function render() {
 
     gl.clear( gl.COLOR_BUFFER_BIT );
+    //define color
+    var color = vec4(colorArray[0],colorArray[1],colorArray[2],1.0);
+	var colorLoc = gl.getUniformLocation(program,"color");
+	gl.uniform4fv(colorLoc,color);
 
-	//TODO: send color to shader
-	//TODO: calculate and send transformation matrix
-	//TODO: draw digits
-	
+    // calculate common Matrix
     transformationMatrix = mat4();
-    gl.uniformMatrix4fv( transformationMatrixLoc, false, flatten(transformationMatrix) );
-
-    /*gl.bindBuffer( gl.ARRAY_BUFFER, bufferNum1 );
-    gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
-    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 3 );
-	
-    gl.bindBuffer( gl.ARRAY_BUFFER, bufferNum2 );
-    gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
-    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );*/
-   
     
+    m = mult(transformationMatrix,translate([x,y,0]))
+    m = mult(m,scalem([scaleX,scaleY,1]))
+    m = mult(m,rotate(rotateZ,0,0,1))
+   
 	
+	//DIGIT 1
+
+    //use Common Matrix
+    transformationMatrix = mult(transformationMatrix,m)
+
+    //seperate digits
+    transformationMatrix = mult(transformationMatrix,translate([-0.18,0,0]))
+    gl.uniformMatrix4fv( transformationMatrixLoc, false, flatten(transformationMatrix));
+
+    calculateIndices(firstDigit)
+    var iBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices),gl.STATIC_DRAW);
+   
+    for(var i = 0; i < indices.length; i += 4)
+    gl.drawElements( gl.TRIANGLE_FAN, 4, gl.UNSIGNED_BYTE, i );
+
+    //--------------------------------------------------------------//
+
+    //DIGIT2
+
+    transformationMatrix = mat4();
+    //use Common Matrix
+    transformationMatrix = mult(transformationMatrix,m)
+
+    //seperate digits
+    transformationMatrix = mult(transformationMatrix,translate([0.18,0,0]))
+    gl.uniformMatrix4fv( transformationMatrixLoc, false, flatten(transformationMatrix));
+
+
+    calculateIndices(secondDigit)
+    var iBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices),gl.STATIC_DRAW);
+   
     for(var i = 0; i < indices.length; i += 4)
     gl.drawElements( gl.TRIANGLE_FAN, 4, gl.UNSIGNED_BYTE, i );
 
     //window.requestAnimFrame(render);
 }
 
-function calculateVertices(digit){
+function calculateIndices(digit){
+    //calculates necessary indices for given digit
     indices = []
     for(var i = 0 ; i<numberBlocks[digit].length ; i++){
         
@@ -177,5 +242,5 @@ function calculateVertices(digit){
 
         }
     }
-    console.log(indices)
+    
 }
