@@ -34,14 +34,14 @@ var vertices = [
 ];
 
 var blocks = [
-    [4,5,1,0],
-    [5,6,2,1],
-    [6,7,3,2],
-    [8,9,5,4],
-    [9,10,6,5],
-    [10,11,7,6],
-    [12,13,9,8],
-    [13,14,10,9],
+    [4,5,1,0],                            // block 0
+    [5,6,2,1],                            // block 1
+    [6,7,3,2],                            // block 2      
+    [8,9,5,4],                            // block 3  
+    [9,10,6,5],                           // etc..  
+    [10,11,7,6],                          // We used block oriented method   
+    [12,13,9,8],                          // We have 15 block   
+    [13,14,10,9],                         // so we can easyl draw anything with choosing appropriate blocks   
     [14,15,11,10],
     [16,17,13,12],
     [17,18,14,13],
@@ -57,7 +57,7 @@ var numberBlocks = [
     [0,1,2,5,6,7,8,9,12,13,14],             //2
     [0,1,2,5,6,7,8,11,12,13,14],            //3
     [0,2,3,5,6,7,8,11,14],                  //4
-    [0,1,2,3,6,7,8,11,12,13,14],             //5
+    [0,1,2,3,6,7,8,11,12,13,14],            //5
     [0,3,6,7,8,9,11,12,13,14],              //6
     [0,1,2,5,8,11,14],                      //7
     [0,1,2,3,5,6,7,8,9,11,12,13,14],        //8
@@ -112,10 +112,12 @@ window.onload = function init()
     transformationMatrixLoc = gl.getUniformLocation( program, "transformationMatrix" );
 
 	document.getElementById("inp_number").oninput = function(event) {
+        //first digit 0 check
         if(this.value < 10)
           firstDigit = 0;
         else
           firstDigit = Math.floor(this.value / 10) ;
+        //second digit calculation  
         secondDigit =  this.value%10;
         render();
     };
@@ -130,12 +132,10 @@ window.onload = function init()
         render();
     };
     document.getElementById("inp_obj_scaleX").oninput = function(event) {
-        
         scaleX = this.value;
         render();
     };
     document.getElementById("inp_obj_scaleY").oninput = function(event) {
-        
         scaleY= this.value;
         render();
     };
@@ -157,7 +157,7 @@ window.onload = function init()
         render();
     };
 
-     // initilaze inputs values   
+    // initilaze input elements values   
     document.getElementById("redSlider").value=colorArray[0]
     document.getElementById("greenSlider").value=colorArray[1]
     document.getElementById("blueSlider").value=colorArray[2]
@@ -177,6 +177,9 @@ window.onload = function init()
 
 function render() {
 
+    //--------------------------------------------------------------//
+    
+    //common parts for all digits
     gl.clear( gl.COLOR_BUFFER_BIT );
     //define color
     var color = vec4(colorArray[0],colorArray[1],colorArray[2],1.0);
@@ -190,6 +193,7 @@ function render() {
     commonMatrix = mult(commonMatrix,scalem([scaleX,scaleY,1]))
     commonMatrix = mult(commonMatrix,rotate(rotateZ,0,0,1))
    
+    //--------------------------------------------------------------//
 	
 	//DIGIT 1
 
@@ -229,7 +233,9 @@ function render() {
     for(var i = 0; i < indices.length; i += 4)
     gl.drawElements( gl.TRIANGLE_FAN, 4, gl.UNSIGNED_BYTE, i );
 
-    //window.requestAnimFrame(render);
+    //--------------------------------------------------------------//
+
+    //window.requestAnimFrame(render); render only change
 }
 
 function calculateIndices(digit){
