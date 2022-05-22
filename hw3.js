@@ -186,15 +186,15 @@ function render() {
     // calculate common Matrix
     transformationMatrix = mat4();
     
-    m = mult(transformationMatrix,translate([x,y,0]))
-    m = mult(m,scalem([scaleX,scaleY,1]))
-    m = mult(m,rotate(rotateZ,0,0,1))
+    commonMatrix = mult(transformationMatrix,translate([x,y,0]))
+    commonMatrix = mult(commonMatrix,scalem([scaleX,scaleY,1]))
+    commonMatrix = mult(commonMatrix,rotate(rotateZ,0,0,1))
    
 	
 	//DIGIT 1
 
     //use Common Matrix
-    transformationMatrix = mult(transformationMatrix,m)
+    transformationMatrix = mult(transformationMatrix,commonMatrix)
 
     //seperate digits
     transformationMatrix = mult(transformationMatrix,translate([-0.18,0,0]))
@@ -214,7 +214,7 @@ function render() {
 
     transformationMatrix = mat4();
     //use Common Matrix
-    transformationMatrix = mult(transformationMatrix,m)
+    transformationMatrix = mult(transformationMatrix,commonMatrix)
 
     //seperate digits
     transformationMatrix = mult(transformationMatrix,translate([0.18,0,0]))
