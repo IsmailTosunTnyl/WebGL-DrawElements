@@ -73,7 +73,7 @@ var rotateZ = 0;
 var colorArray = [Math.random() ,Math.random(),Math.random(),1.0]
 var firstDigit; 
 var secondDigit;
-var studentsNumberEnd = 20;
+var studentsNumberEnd = 07;
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
