@@ -73,7 +73,7 @@ var rotateZ = 0;
 var colorArray = [Math.random() ,Math.random(),Math.random(),1.0]
 var firstDigit; 
 var secondDigit;
-var studentsNumberEnd = 07;
+var studentsNumberEnd = 20;
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
@@ -165,7 +165,7 @@ window.onload = function init()
     if(studentsNumberEnd < 10)
         firstDigit = 0;
     else
-        firstDigit = Math.floor(this.value / 10) ;
+        firstDigit = Math.floor(studentsNumberEnd / 10) ;
     secondDigit =  studentsNumberEnd%10;
    
     
